@@ -71,6 +71,7 @@ namespace GraphicsEngine
 			spriteList[name] = new SpriteBox();
 			spriteList[name].Image = img;
 			spriteList[name].Location = loc;
+			spriteList[name].Size = img.Size;
 			
 			Controls.Add(spriteList[name]);
 		}

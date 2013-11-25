@@ -10,8 +10,11 @@ D:\Code\GraphicsEngine\GraphicsEngine\obj\Debug\GraphicsEngine.pdb
 D:\Code\GraphicsEngine\src\GraphicsEngine\bin\Debug\GraphicsEngine.exe.config
 D:\Code\GraphicsEngine\src\GraphicsEngine\obj\Debug\GraphicsEngine.exe
 D:\Code\GraphicsEngine\src\GraphicsEngine\obj\Debug\GraphicsEngine.pdb
+<<<<<<< HEAD
 D:\Code\GraphicsEngine\src\GraphicsEngine\bin\Debug\res\Evil.jpg
 D:\Code\GraphicsEngine\src\GraphicsEngine\bin\Debug\res\Player.png
+=======
+>>>>>>> master
 D:\Code\GraphicsEngine\src\GraphicsEngine\bin\Debug\GraphicsEngine.exe
 D:\Code\GraphicsEngine\src\GraphicsEngine\bin\Debug\GraphicsEngine.pdb
 D:\Code\GraphicsEngine\src\GraphicsEngine\obj\Debug\GraphicsEngine.csprojResolveAssemblyReference.cache
