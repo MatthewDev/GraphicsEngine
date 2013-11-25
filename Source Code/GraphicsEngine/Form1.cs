@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -18,31 +19,40 @@ namespace GraphicsEngine
 
 		private void Init()
 		{
-			LoadSprite("player", Image.FromFile(@"res\Player.png"), new Point(0, 0));
-			LoadSprite("evil", Image.FromFile(@"res\Evil.jpg"), new Point(433, 409));
+			LoadSprite("player", Image.FromFile(@"res\pd.png"), new Point(0, 0));
+			LoadSprite("evil", Image.FromFile(@"res\eu.jpg"), new Point(450, 450));
 		}
 
 		private void FrameLoad()
 		{
+			Invoke(new Action(() => { Text = spriteList["player"].X + ", " + spriteList["player"].Y; }));
 
+			if (spriteList["player"].Location == spriteList["evil"].Location)
+			{
+				Debug.WriteLine("OVERLAP");
+			}
 		}
 
 		private void Form1_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.KeyData == Keys.Down)
 			{
+				spriteList["player"].Image = Image.FromFile(@"res\pd.png");
 				spriteList["player"].Y += 50;
 			}
 			else if (e.KeyData == Keys.Up)
 			{
+				spriteList["player"].Image = Image.FromFile(@"res\pu.png");
 				spriteList["player"].Y -= 50;
 			}
 			else if (e.KeyData == Keys.Left)
 			{
+				spriteList["player"].Image = Image.FromFile(@"res\pl.png");
 				spriteList["player"].X -= 50;
 			}
 			else if (e.KeyData == Keys.Right)
 			{
+				spriteList["player"].Image = Image.FromFile(@"res\pr.png");
 				spriteList["player"].X += 50;
 			}
 		}
