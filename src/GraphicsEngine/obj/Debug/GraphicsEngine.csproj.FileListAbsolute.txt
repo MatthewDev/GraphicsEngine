@@ -7,3 +7,14 @@ D:\Code\GraphicsEngine\GraphicsEngine\obj\Debug\GraphicsEngine.Properties.Resour
 D:\Code\GraphicsEngine\GraphicsEngine\obj\Debug\GraphicsEngine.csproj.GenerateResource.Cache
 D:\Code\GraphicsEngine\GraphicsEngine\obj\Debug\GraphicsEngine.exe
 D:\Code\GraphicsEngine\GraphicsEngine\obj\Debug\GraphicsEngine.pdb
+D:\Code\GraphicsEngine\src\GraphicsEngine\bin\Debug\GraphicsEngine.exe.config
+D:\Code\GraphicsEngine\src\GraphicsEngine\obj\Debug\GraphicsEngine.exe
+D:\Code\GraphicsEngine\src\GraphicsEngine\obj\Debug\GraphicsEngine.pdb
+D:\Code\GraphicsEngine\src\GraphicsEngine\bin\Debug\res\Evil.jpg
+D:\Code\GraphicsEngine\src\GraphicsEngine\bin\Debug\res\Player.png
+D:\Code\GraphicsEngine\src\GraphicsEngine\bin\Debug\GraphicsEngine.exe
+D:\Code\GraphicsEngine\src\GraphicsEngine\bin\Debug\GraphicsEngine.pdb
+D:\Code\GraphicsEngine\src\GraphicsEngine\obj\Debug\GraphicsEngine.csprojResolveAssemblyReference.cache
+D:\Code\GraphicsEngine\src\GraphicsEngine\obj\Debug\GraphicsEngine.Form1.resources
+D:\Code\GraphicsEngine\src\GraphicsEngine\obj\Debug\GraphicsEngine.Properties.Resources.resources
+D:\Code\GraphicsEngine\src\GraphicsEngine\obj\Debug\GraphicsEngine.csproj.GenerateResource.Cache
