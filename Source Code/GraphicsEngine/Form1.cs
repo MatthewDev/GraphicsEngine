@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Media;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace GraphicsEngine
 
 		private const int frameDelay = 50;
 		private const int aiDelay = 200;
+		private const int aiShootDelay = 100;
 
 		#endregion
 
@@ -28,13 +30,16 @@ namespace GraphicsEngine
 		private int bulletCount = 0;
 		private List<Point> rockPoints = new List<Point>();
 		private Random rdm = new Random(DateTime.Now.Millisecond * DateTime.Now.Second);
+		private SoundPlayer impactSound = new SoundPlayer(@"res\boom.wav");
 		#endregion
 
 		#region Main Code
 		private void Init()
 		{
-			LoadSprite("player", Image.FromFile(@"res\pd.png"), new Point(0, 0));
-			LoadSprite("evil", Image.FromFile(@"res\eu.jpg"), new Point(450, 450));
+			Text = "Shooter...";
+
+			LoadSprite("player", Image.FromFile(@"res\pd.png"), new Point(450, 0));
+			LoadSprite("evil", Image.FromFile(@"res\eu.jpg"), new Point(0, 450));
 
 			rockPoints.Add(new Point(50, 50));
 			rockPoints.Add(new Point(50, 100));
@@ -54,13 +59,10 @@ namespace GraphicsEngine
 			rockPoints.Add(new Point(400, 300));
 			rockPoints.Add(new Point(200, 200));
 			LoadRocks();
-
-			BulletOverlap += Form1_SpriteOverlap;
 		}
 
 		private void FrameLoad()
 		{
-			UpdateTitleWithSpriteloc();
 			ManageBullets();
 		}
 		#endregion
@@ -139,10 +141,12 @@ namespace GraphicsEngine
 
 				if (Math.Abs(player - up) < Math.Abs(player - down))
 				{
+					spriteList["evil"].Image = Image.FromFile(@"res\eu.jpg");
 					AIShoot(Directions.Up);
 				}
 				else
 				{
+					spriteList["evil"].Image = Image.FromFile(@"res\ed.jpg");
 					AIShoot(Directions.Down);
 				}
 			}
@@ -156,10 +160,12 @@ namespace GraphicsEngine
 
 				if (Math.Abs(player - left) < Math.Abs(player - right))
 				{
+					spriteList["evil"].Image = Image.FromFile(@"res\el.jpg");
 					AIShoot(Directions.Left);
 				}
 				else
 				{
+					spriteList["evil"].Image = Image.FromFile(@"res\er.jpg");
 					AIShoot(Directions.Right);
 				}
 			}
@@ -168,11 +174,9 @@ namespace GraphicsEngine
 
 		private void AIShoot(Directions d)
 		{
-			Debug.WriteLine("Shooting...");
+			Thread.Sleep(aiShootDelay);
 			Bullet thisBullet = new Bullet("b" + bulletCount++, d);
 			bulletList.Add(thisBullet);
-
-			Debug.WriteLine("Loaded...");
 
 			Point bulletPoint = new Point(0, 0);
 			if (d == Directions.Up)
@@ -184,23 +188,23 @@ namespace GraphicsEngine
 			else if (d == Directions.Right)
 				bulletPoint = new Point(spriteList["evil"].X + 50, spriteList["evil"].Y);
 
+			impactSound.Play();
 			Invoke(new Action(() => LoadSprite(thisBullet.BulletName, Image.FromFile(@"res\b.png"), bulletPoint)));
-			Debug.WriteLine("Shot!");
 		}
 
 		private void InitAI()
 		{
-			try
+			while (true)
 			{
-				while (true)
+				try
 				{
 					MoveAI();
-					Thread.Sleep(aiDelay);
 				}
-			}
-			catch  (Exception ex)
-			{
-				Debug.WriteLine("AI is confused... " + ex);
+				catch (Exception ex)
+				{
+					Debug.WriteLine("AI is confused... " + ex);
+				}
+				Thread.Sleep(aiDelay);
 			}
 		}
 		#endregion
@@ -286,21 +290,12 @@ namespace GraphicsEngine
 
 				if (sprite2 == "evil")
 				{
-					MessageBox.Show("You won!");
+					Invoke(new Action(() => { Text += " you win!"; }));
 				}
 				else if (sprite2 == "player")
 				{
-					MessageBox.Show("You lost!");
+					Invoke(new Action(() => { Text += " you lose..."; }));
 				}
-			}
-			catch { }
-		}
-
-		private void UpdateTitleWithSpriteloc()
-		{
-			try
-			{
-				Invoke(new Action(() => { Text = spriteList["player"].X + ", " + spriteList["player"].Y; }));
 			}
 			catch { }
 		}
@@ -351,15 +346,16 @@ namespace GraphicsEngine
 					bulletList.Add(thisBullet);
 
 					Point bulletPoint = new Point(0, 0);
-					if (playerDirection == Directions.Up)
+					if (thisBullet.Direction == Directions.Up)
 						bulletPoint = new Point(spriteList["player"].X, spriteList["player"].Y - 50);
-					else if (playerDirection == Directions.Down)
+					else if (thisBullet.Direction == Directions.Down)
 						bulletPoint = new Point(spriteList["player"].X, spriteList["player"].Y + 50);
-					else if (playerDirection == Directions.Left)
+					else if (thisBullet.Direction == Directions.Left)
 						bulletPoint = new Point(spriteList["player"].X - 50, spriteList["player"].Y);
-					else if (playerDirection == Directions.Right)
+					else if (thisBullet.Direction == Directions.Right)
 						bulletPoint = new Point(spriteList["player"].X + 50, spriteList["player"].Y);
 
+					impactSound.Play();
 					LoadSprite(thisBullet.BulletName, Image.FromFile(@"res\b.png"), bulletPoint);
 				}
 			}
@@ -373,6 +369,7 @@ namespace GraphicsEngine
 		{
 			InitializeComponent();
 			Init();
+			BulletOverlap += Form1_SpriteOverlap;
 
 			Thread frameThread = new Thread(FrameThreadInit);
 			frameThread.Start();
@@ -393,10 +390,10 @@ namespace GraphicsEngine
 			{
 				for (int i = 0; i < bulletList.Count; i++)
 				{
-					Bullet b = bulletList[i];
-					for (int j = 0; j < spriteList.Count; j++)
+					try
 					{
-						try
+						Bullet b = bulletList[i];
+						for (int j = 0; j < spriteList.Count; j++)
 						{
 							KeyValuePair<string, SpriteBox> thisSprite = spriteList.ElementAt(j);
 							if (b.BulletName == thisSprite.Key || thisSprite.Key[0] == 'b')
@@ -412,8 +409,8 @@ namespace GraphicsEngine
 								}
 							}
 						}
-						catch { }
 					}
+					catch { }
 				}
 			}
 		}
