@@ -14,13 +14,23 @@ namespace GraphicsEngine
 {
 	public partial class Form1 : Form
 	{
+		#region config
+
 		private const int frameDelay = 50;
+		private const int aiDelay = 200;
+
+		#endregion
+
+		#region vars
 		private Dictionary<string, SpriteBox> spriteList = new Dictionary<string, SpriteBox>();
 		private List<Bullet> bulletList = new List<Bullet>();
 		private Directions playerDirection = Directions.Down;
 		private int bulletCount = 0;
 		private List<Point> rockPoints = new List<Point>();
+		private Random rdm = new Random(DateTime.Now.Millisecond * DateTime.Now.Second);
+		#endregion
 
+		#region Main Code
 		private void Init()
 		{
 			LoadSprite("player", Image.FromFile(@"res\pd.png"), new Point(0, 0));
@@ -33,10 +43,169 @@ namespace GraphicsEngine
 			rockPoints.Add(new Point(350, 200));
 			rockPoints.Add(new Point(350, 400));
 			rockPoints.Add(new Point(300, 400));
+			rockPoints.Add(new Point(200, 50));
+			rockPoints.Add(new Point(200, 100));
+			rockPoints.Add(new Point(50, 300));
+			rockPoints.Add(new Point(50, 350));
+			rockPoints.Add(new Point(100, 300));
+			rockPoints.Add(new Point(100, 350));
+			rockPoints.Add(new Point(400, 50));
+			rockPoints.Add(new Point(100, 100));
+			rockPoints.Add(new Point(400, 300));
+			rockPoints.Add(new Point(200, 200));
 			LoadRocks();
 
 			BulletOverlap += Form1_SpriteOverlap;
 		}
+
+		private void FrameLoad()
+		{
+			UpdateTitleWithSpriteloc();
+			ManageBullets();
+		}
+		#endregion
+
+		#region AI
+		private void MoveAI()
+		{
+			#region Moving
+			int rdmChoice = rdm.Next(0, 2);
+
+			if (rdmChoice == 0)
+			{
+				//Up and down, y axis
+				int orig = spriteList["evil"].Y;
+				int player = spriteList["player"].Y;
+				int up = orig - 50;
+				int down = orig + 50;
+
+				if (Math.Abs(player - up) < Math.Abs(player - down))
+				{
+					if (IsValidPoint(new Point(spriteList["evil"].X, up)))
+					{
+						spriteList["evil"].Image = Image.FromFile(@"res\eu.jpg");
+						spriteList["evil"].Y = up;
+					}
+				}
+				else
+				{
+					if (IsValidPoint(new Point(spriteList["evil"].X, down)))
+					{
+						spriteList["evil"].Image = Image.FromFile(@"res\ed.jpg");
+						spriteList["evil"].Y = down;
+					}
+				}
+			}
+			else
+			{
+				//Left and right
+				int orig = spriteList["evil"].X;
+				int player = spriteList["player"].X;
+				int left = orig - 50;
+				int right = orig + 50;
+
+				if (Math.Abs(player - left) < Math.Abs(player - right))
+				{
+					if (IsValidPoint(new Point(left, spriteList["evil"].Y)))
+					{
+						spriteList["evil"].Image = Image.FromFile(@"res\el.jpg");
+						spriteList["evil"].X = left;
+					}
+				}
+				else
+				{
+					if (IsValidPoint(new Point(right, spriteList["evil"].Y)))
+					{
+						spriteList["evil"].Image = Image.FromFile(@"res\er.jpg");
+						spriteList["evil"].X = right;
+					}
+				}
+			}
+			#endregion
+
+			AIAttemptToShoot();
+		}
+
+		private void AIAttemptToShoot()
+		{
+			if (spriteList["evil"].X == spriteList["player"].X)
+			{
+				Debug.WriteLine("aha!");
+				//Up and down, y axis
+				int orig = spriteList["evil"].Y;
+				int player = spriteList["player"].Y;
+				int up = orig - 50;
+				int down = orig + 50;
+
+				if (Math.Abs(player - up) < Math.Abs(player - down))
+				{
+					AIShoot(Directions.Up);
+				}
+				else
+				{
+					AIShoot(Directions.Down);
+				}
+			}
+			else if (spriteList["evil"].Y == spriteList["player"].Y)
+			{
+				//Left and right
+				int orig = spriteList["evil"].X;
+				int player = spriteList["player"].X;
+				int left = orig - 50;
+				int right = orig + 50;
+
+				if (Math.Abs(player - left) < Math.Abs(player - right))
+				{
+					AIShoot(Directions.Left);
+				}
+				else
+				{
+					AIShoot(Directions.Right);
+				}
+			}
+			Debug.WriteLine("Cool");
+		}
+
+		private void AIShoot(Directions d)
+		{
+			Debug.WriteLine("Shooting...");
+			Bullet thisBullet = new Bullet("b" + bulletCount++, d);
+			bulletList.Add(thisBullet);
+
+			Debug.WriteLine("Loaded...");
+
+			Point bulletPoint = new Point(0, 0);
+			if (d == Directions.Up)
+				bulletPoint = new Point(spriteList["evil"].X, spriteList["evil"].Y - 50);
+			else if (d == Directions.Down)
+				bulletPoint = new Point(spriteList["evil"].X, spriteList["evil"].Y + 50);
+			else if (d == Directions.Left)
+				bulletPoint = new Point(spriteList["evil"].X - 50, spriteList["evil"].Y);
+			else if (d == Directions.Right)
+				bulletPoint = new Point(spriteList["evil"].X + 50, spriteList["evil"].Y);
+
+			Invoke(new Action(() => LoadSprite(thisBullet.BulletName, Image.FromFile(@"res\b.png"), bulletPoint)));
+			Debug.WriteLine("Shot!");
+		}
+
+		private void InitAI()
+		{
+			try
+			{
+				while (true)
+				{
+					MoveAI();
+					Thread.Sleep(aiDelay);
+				}
+			}
+			catch  (Exception ex)
+			{
+				Debug.WriteLine("AI is confused... " + ex);
+			}
+		}
+		#endregion
+
+		#region Physics
 
 		private void LoadRocks()
 		{
@@ -46,12 +215,6 @@ namespace GraphicsEngine
 			{
 				LoadSprite("r" + ++counter, rImage, p);
 			}
-		}
-
-		private void FrameLoad()
-		{
-			UpdateTitleWithSpriteloc();
-			ManageBullets();
 		}
 
 		private void ManageBullets()
@@ -69,6 +232,11 @@ namespace GraphicsEngine
 
 		private void MoveBullet(int i)
 		{
+			if (!IsValidPoint(spriteList[bulletList[i].BulletName].Location))
+			{
+				RemoveBullet(i);
+			}
+
 			if (bulletList[i].Direction == Directions.Up)
 			{
 				spriteList[bulletList[i].BulletName].Y -= 50;
@@ -84,11 +252,6 @@ namespace GraphicsEngine
 			else if (bulletList[i].Direction == Directions.Right)
 			{
 				spriteList[bulletList[i].BulletName].X += 50;
-			}
-
-			if (!IsValidPoint(spriteList[bulletList[i].BulletName].Location))
-			{
-				RemoveBullet(i);
 			}
 		}
 
@@ -120,6 +283,15 @@ namespace GraphicsEngine
 			try
 			{
 				RemoveSprite(sprite2);
+
+				if (sprite2 == "evil")
+				{
+					MessageBox.Show("You won!");
+				}
+				else if (sprite2 == "player")
+				{
+					MessageBox.Show("You lost!");
+				}
 			}
 			catch { }
 		}
@@ -135,60 +307,66 @@ namespace GraphicsEngine
 
 		private void Form1_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (e.KeyData == Keys.Down)
+			try
 			{
-				playerDirection = Directions.Down;
-				spriteList["player"].Image = Image.FromFile(@"res\pd.png");
-				if (IsValidPoint(new Point(spriteList["player"].X, spriteList["player"].Y + 50)))
+				if (e.KeyData == Keys.Down)
 				{
-					spriteList["player"].Y += 50;
+					playerDirection = Directions.Down;
+					spriteList["player"].Image = Image.FromFile(@"res\pd.png");
+					if (IsValidPoint(new Point(spriteList["player"].X, spriteList["player"].Y + 50)))
+					{
+						spriteList["player"].Y += 50;
+					}
 				}
-			}
-			else if (e.KeyData == Keys.Up)
-			{
-				playerDirection = Directions.Up;
-				spriteList["player"].Image = Image.FromFile(@"res\pu.png");
-				if (IsValidPoint(new Point(spriteList["player"].X, spriteList["player"].Y - 50)))
+				else if (e.KeyData == Keys.Up)
 				{
-					spriteList["player"].Y -= 50;
+					playerDirection = Directions.Up;
+					spriteList["player"].Image = Image.FromFile(@"res\pu.png");
+					if (IsValidPoint(new Point(spriteList["player"].X, spriteList["player"].Y - 50)))
+					{
+						spriteList["player"].Y -= 50;
+					}
 				}
-			}
-			else if (e.KeyData == Keys.Left)
-			{
-				playerDirection = Directions.Left;
-				spriteList["player"].Image = Image.FromFile(@"res\pl.png");
-				if (IsValidPoint(new Point(spriteList["player"].X - 50, spriteList["player"].Y)))
+				else if (e.KeyData == Keys.Left)
 				{
-					spriteList["player"].X -= 50;
+					playerDirection = Directions.Left;
+					spriteList["player"].Image = Image.FromFile(@"res\pl.png");
+					if (IsValidPoint(new Point(spriteList["player"].X - 50, spriteList["player"].Y)))
+					{
+						spriteList["player"].X -= 50;
+					}
 				}
-			}
-			else if (e.KeyData == Keys.Right)
-			{
-				playerDirection = Directions.Right;
-				spriteList["player"].Image = Image.FromFile(@"res\pr.png");
-				if (IsValidPoint(new Point(spriteList["player"].X + 50, spriteList["player"].Y)))
+				else if (e.KeyData == Keys.Right)
 				{
-					spriteList["player"].X += 50;
+					playerDirection = Directions.Right;
+					spriteList["player"].Image = Image.FromFile(@"res\pr.png");
+					if (IsValidPoint(new Point(spriteList["player"].X + 50, spriteList["player"].Y)))
+					{
+						spriteList["player"].X += 50;
+					}
 				}
-			}
-			else if (e.KeyData == Keys.Space)
-			{
-				Bullet thisBullet = new Bullet("b" + bulletCount++, playerDirection);
-				bulletList.Add(thisBullet);
+				else if (e.KeyData == Keys.Space)
+				{
+					Bullet thisBullet = new Bullet("b" + bulletCount++, playerDirection);
+					bulletList.Add(thisBullet);
 
-				Point bulletPoint = new Point(0, 0);
-				if (playerDirection == Directions.Up)
-					bulletPoint = new Point(spriteList["player"].X, spriteList["player"].Y - 50);
-				else if (playerDirection == Directions.Down)
-					bulletPoint = new Point(spriteList["player"].X, spriteList["player"].Y + 50);
-				else if (playerDirection == Directions.Left)
-					bulletPoint = new Point(spriteList["player"].X - 50, spriteList["player"].Y);
-				else if (playerDirection == Directions.Right)
-					bulletPoint = new Point(spriteList["player"].X + 50, spriteList["player"].Y);
+					Point bulletPoint = new Point(0, 0);
+					if (playerDirection == Directions.Up)
+						bulletPoint = new Point(spriteList["player"].X, spriteList["player"].Y - 50);
+					else if (playerDirection == Directions.Down)
+						bulletPoint = new Point(spriteList["player"].X, spriteList["player"].Y + 50);
+					else if (playerDirection == Directions.Left)
+						bulletPoint = new Point(spriteList["player"].X - 50, spriteList["player"].Y);
+					else if (playerDirection == Directions.Right)
+						bulletPoint = new Point(spriteList["player"].X + 50, spriteList["player"].Y);
 
-				LoadSprite(thisBullet.BulletName, Image.FromFile(@"res\b.png"), bulletPoint);
+					LoadSprite(thisBullet.BulletName, Image.FromFile(@"res\b.png"), bulletPoint);
+				}
 			}
+			catch { }
 		}
+
+		#endregion
 
 		#region Internals
 		public Form1()
@@ -201,6 +379,9 @@ namespace GraphicsEngine
 
 			Thread overlapDetector = new Thread(OverlapDetectorInit);
 			overlapDetector.Start();
+
+			Thread aiThread = new Thread(InitAI);
+			aiThread.Start();
 		}
 
 		private delegate void BulletOverlapHandler(string sprite1, string sprite2);
