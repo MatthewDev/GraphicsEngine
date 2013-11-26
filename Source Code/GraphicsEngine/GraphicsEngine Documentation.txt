@@ -1,4 +1,7 @@
-﻿GraphicsEngine Documentation!
+﻿=============================
+GraphicsEngine Documentation!
+by Andrew Kim
+=============================
 
 Main methods:
 -In method "Init", you'll want to place the code to run at startup
@@ -8,8 +11,15 @@ Sprites:
 -There's a Dictionary of sprites called "spriteList"
 -To load a sprite, use method "LoadSprite"
 -To remove a sprite, use method "RemoveSprite"
--To change location of sprites, use SpriteBox's int properties "X" and "Y"
+-To change location of sprites, use either SpriteBox's int properties "X" and "Y" or change property "Location"
 -SpriteBox is inherited from PictureBox control
+
+Events pre-subscribed:
+-MouseDownHandler, remove if not needed
+-KeyDownHandler, remove if not needed
+
+Cursor:
+-Get cursor location relative to form using method "GetCursorPos"
 
 Frame Delay:
 -To change the delay time between each frame, change value of const "frameDelay"
