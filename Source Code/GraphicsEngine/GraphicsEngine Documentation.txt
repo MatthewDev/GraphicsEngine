@@ -12,6 +12,7 @@ Sprites:
 -To load a sprite, use method "LoadSprite"
 -To remove a sprite, use method "RemoveSprite"
 -To change location of sprites, use either SpriteBox's int properties "X" and "Y" or change property "Location"
+-To check if two sprites overlap, use method "AreOverlappingSprites"
 -SpriteBox is inherited from PictureBox control
 
 Events pre-subscribed:

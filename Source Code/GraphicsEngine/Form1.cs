@@ -68,6 +68,19 @@ namespace GraphicsEngine
 			spriteList.Remove(name);
 		}
 
+		private bool AreOverlappingSprites(string spName1, string spName2)
+		{
+			Rectangle sp1 = new Rectangle(spriteList[spName1].X, spriteList[spName1].Y, spriteList[spName1].Width, spriteList[spName1].Height);
+			Rectangle sp2 = new Rectangle(spriteList[spName2].X, spriteList[spName2].Y, spriteList[spName2].Width, spriteList[spName2].Height);
+			Rectangle overlapArea = Rectangle.Intersect(sp1, sp2);
+
+			if (overlapArea.IsEmpty)
+			{
+				return false;
+			}
+			return true;
+		}
+
 		private void FrameThreadInit()
 		{
 			while (true)
