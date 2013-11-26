@@ -55,7 +55,8 @@ namespace GraphicsEngine
 			spriteList[name].Image = img;
 			spriteList[name].Location = loc;
 			spriteList[name].Size = img.Size;
-			spriteList[name].BackColor = Color.Transparent;
+			//Disabled by default - Winforms ain't very good with transparency...
+			//spriteList[name].BackColor = Color.Transparent;
 			spriteList[name].MouseDown += MouseDownHandler;
 			Controls.Add(spriteList[name]);
 		}
