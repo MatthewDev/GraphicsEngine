@@ -14,7 +14,11 @@ namespace GraphicsEngine
 {
 	public partial class Form1 : Form
 	{
+		#region const
 		private const int frameDelay = 1;
+		#endregion
+
+		#region vars
 		private Dictionary<string, SpriteBox> spriteList = new Dictionary<string, SpriteBox>();
 		private List<string> duckList = new List<string>();
 		private Random rdm = new Random(DateTime.Now.Millisecond * DateTime.Now.Second);
@@ -23,6 +27,7 @@ namespace GraphicsEngine
 		private int duckKillCount = 0;
 		private int duckSpeed = 5;
 		Image duck = Image.FromFile(@"res\duck.png");
+		#endregion
 
 		private void Init()
 		{
