@@ -148,7 +148,7 @@ namespace GraphicsEngine
 			spriteList[name].Image = img;
 			spriteList[name].Location = loc;
 			spriteList[name].Size = img.Size;
-			spriteList[name].BackColor = Color.Transparent;
+			//spriteList[name].BackColor = Color.Transparent;
 
 			Controls.Add(spriteList[name]);
 		}
