@@ -284,8 +284,8 @@ namespace GraphicsEngine
 
 		private void Form1_SpriteOverlap(string sprite1, string sprite2)
 		{
-			try
-			{
+			//try
+			//{
 				RemoveSprite(sprite2);
 
 				if (sprite2 == "evil")
@@ -296,8 +296,8 @@ namespace GraphicsEngine
 				{
 					Invoke(new Action(() => { Text += " you lose..."; }));
 				}
-			}
-			catch { }
+			//}
+			//catch { }
 		}
 
 		private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -369,6 +369,7 @@ namespace GraphicsEngine
 		{
 			InitializeComponent();
 			Init();
+
 			BulletOverlap += Form1_SpriteOverlap;
 
 			Thread frameThread = new Thread(FrameThreadInit);
@@ -424,6 +425,37 @@ namespace GraphicsEngine
 			return false;
 		}
 
+		private void LoadSprite(string name, Image img, Point loc)
+		{
+			spriteList[name] = new SpriteBox();
+			spriteList[name].Image = img;
+			spriteList[name].Location = loc;
+			spriteList[name].Size = img.Size;
+			//Disabled by default - Winforms ain't very good with transparency...
+			//spriteList[name].BackColor = Color.Transparent;
+			Controls.Add(spriteList[name]);
+		}
+
+		private void RemoveSprite(string name)
+		{
+			Invoke(new Action(() => { Controls.Remove(spriteList[name]); }));
+			//spriteList[name].Dispose();
+			spriteList.Remove(name);
+		}
+
+		private bool AreOverlappingSprites(string spName1, string spName2)
+		{
+			Rectangle sp1 = new Rectangle(spriteList[spName1].X, spriteList[spName1].Y, spriteList[spName1].Width, spriteList[spName1].Height);
+			Rectangle sp2 = new Rectangle(spriteList[spName2].X, spriteList[spName2].Y, spriteList[spName2].Width, spriteList[spName2].Height);
+			Rectangle overlapArea = Rectangle.Intersect(sp1, sp2);
+
+			if (overlapArea.IsEmpty)
+			{
+				return false;
+			}
+			return true;
+		}
+
 		private void FrameThreadInit()
 		{
 			while (true)
@@ -433,24 +465,9 @@ namespace GraphicsEngine
 			}
 		}
 
-		private void LoadSprite(string name, Image img, Point loc)
+		private Point GetCursorPos()
 		{
-			spriteList[name] = new SpriteBox();
-			spriteList[name].Image = img;
-			spriteList[name].Location = loc;
-			spriteList[name].Size = img.Size;
-
-			Controls.Add(spriteList[name]);
-		}
-
-		private void RemoveSprite(string name)
-		{
-			Invoke(new Action(() =>
-			{
-				Controls.Remove(spriteList[name]);
-			}));
-
-			spriteList.Remove(name);
+			return PointToClient(Cursor.Position);
 		}
 
 		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
