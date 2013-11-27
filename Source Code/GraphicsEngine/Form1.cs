@@ -14,12 +14,14 @@ namespace GraphicsEngine
 {
 	public partial class Form1 : Form
 	{
+		#region constants
 		private const int goombaMoveDelay = 14;
 		private const int goombaMoveAmount = 2;
 		private const int frameDelay = 5;
 
 		private const int goombaHealth = 150;
 		private const int sentryHealth = 300;
+		#endregion
 
 		private int groundLevel;
 		private Dictionary<string, SpriteBox> spriteList = new Dictionary<string, SpriteBox>();
