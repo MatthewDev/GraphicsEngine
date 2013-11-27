@@ -5,9 +5,7 @@ GraphicsEngine is a very simple and barebones graphic engine for C# Winforms pro
 
 You can easily modify parts of the code to make GraphicsEngine run the way you want. The code is mostly easy to read and understand. Unfortunately, Winform's transparency implementation is a bit sketchy, so you might need to plan accordingly.
 
-Prerequisites:
--Visual Studio 2012 and up FOR DESKTOP
--Nothing else!
+Prerequisites: Visual Studio 2012 and up FOR DESKTOP
 
 Sample Projects
 ==============
