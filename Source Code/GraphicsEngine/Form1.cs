@@ -47,11 +47,10 @@ namespace GraphicsEngine
 			foreach (string s in duckList)
 			{
 				LoadSprite(s, duck, new Point(rdm.Next(-300, -100), rdm.Next(0, Size.Height - 100)));
-				spriteList[s].MouseDown += Form1_MouseDown;
 			}
 		}
 
-		private void FrameLoad()
+		private void FrameLoad() //This method executes constantly with an interval specified by frameDelay on seperate thread
 		{
 			MoveDucks();
 			WrapDucks();
@@ -77,7 +76,8 @@ namespace GraphicsEngine
 		{
 			((SpriteBox)sender).Location = new Point(-150, rdm.Next(0, Size.Height - 200));
 
-			Text = "Duck Hunt - Killed " + ++duckKillCount + " ducks!";
+			duckKillCount++;
+			Text = "Duck Hunt - Killed " + duckKillCount + " ducks!";
 
 			if (duckKillCount % 10 == 0)
 			{
@@ -133,6 +133,40 @@ namespace GraphicsEngine
 			frameThread.Start();
 		}
 
+		private void LoadSprite(string name, Image img, Point loc)
+		{
+			spriteList[name] = new SpriteBox();
+			spriteList[name].Image = img;
+			spriteList[name].Location = loc;
+			spriteList[name].Size = img.Size;
+			spriteList[name].BackColor = Color.Transparent;
+			//Disabled by default - Winforms ain't very good with transparency...
+			//spriteList[name].BackColor = Color.Transparent;
+			spriteList[name].MouseDown += Form1_MouseDown;
+			Controls.Add(spriteList[name]);
+		}
+
+		private void RemoveSprite(string name)
+		{
+			Invoke(new Action(() => { Controls.Remove(spriteList[name]); }));
+			spriteList[name].MouseDown -= Form1_MouseDown;
+			spriteList[name].Dispose();
+			spriteList.Remove(name);
+		}
+
+		private bool AreOverlappingSprites(string spName1, string spName2)
+		{
+			Rectangle sp1 = new Rectangle(spriteList[spName1].X, spriteList[spName1].Y, spriteList[spName1].Width, spriteList[spName1].Height);
+			Rectangle sp2 = new Rectangle(spriteList[spName2].X, spriteList[spName2].Y, spriteList[spName2].Width, spriteList[spName2].Height);
+			Rectangle overlapArea = Rectangle.Intersect(sp1, sp2);
+
+			if (overlapArea.IsEmpty)
+			{
+				return false;
+			}
+			return true;
+		}
+
 		private void FrameThreadInit()
 		{
 			while (true)
@@ -142,21 +176,9 @@ namespace GraphicsEngine
 			}
 		}
 
-		private void LoadSprite(string name, Image img, Point loc)
+		private Point GetCursorPos()
 		{
-			spriteList[name] = new SpriteBox();
-			spriteList[name].Image = img;
-			spriteList[name].Location = loc;
-			spriteList[name].Size = img.Size;
-			//spriteList[name].BackColor = Color.Transparent;
-
-			Controls.Add(spriteList[name]);
-		}
-
-		private void RemoveSprite(string name)
-		{
-			Invoke(new Action(() => { Controls.Remove(spriteList[name]); }));
-			spriteList.Remove(name);
+			return PointToClient(Cursor.Position);
 		}
 
 		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
