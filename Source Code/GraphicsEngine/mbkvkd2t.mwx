@@ -14,7 +14,7 @@ namespace GraphicsEngine
 {
 	public partial class Form1 : Form
 	{
-		private const int goombaMoveDelay = 14;
+		private const int goombaMoveDelay = 25;
 		private const int goombaMoveAmount = 2;
 		private const int frameDelay = 5;
 
@@ -168,7 +168,6 @@ namespace GraphicsEngine
 								{
 									level++;
 									Invoke(new Action(() => { nextRoundBtn.Visible = true; }));
-									Invoke(new Action(() => { levelLbl.Text = "Level " + level; }));
 									money += level / 2;
 									DisplayMessage("Hooray, made it to level " + level + " and earned " + level / 2 + " NK Won!");
 									if (rdm.Next(0, 100) == 42)
@@ -214,13 +213,7 @@ namespace GraphicsEngine
 			}
 			else
 			{
-				int toSpawn = 4 * level;
-				for (int i = 0; i < toSpawn; i++)
-				{
-					AddGoomba(goombaHealth);
-				}
 
-				DisplayMessage("~BOSS LEVEL " + level + "~");
 			}
 		}
 
